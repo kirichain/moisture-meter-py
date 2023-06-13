@@ -25,6 +25,10 @@ def connect_mqtt():
     input("Press enter to exit")
 
 def connect_meter():
+    # Global variables
+    global receiving
+    global receivedByteCount
+
     ser = serial.Serial('/dev/ttyUSB0', 2400)
 
     # Check if serial is available then print what is read
@@ -78,5 +82,5 @@ def main():
     connect_meter()
     # Wait for any key to be pressed
     input("Press enter to exit")
-    
+
 main()
