@@ -2,6 +2,8 @@ import serial
 import paho.mqtt.client as mqtt
 import json
 from datetime import datetime
+from gpiozero import Buzzer
+from time import sleep
 
 # Variable to indicate that we are receiving data
 receiving = False
@@ -25,6 +27,13 @@ broker = "pirover.xyz"
 port = 1883
 topic = "moisture-meter-results"
 
+# GPIO variables
+buzzer = None
+def init_gpio():
+    global buzzer
+
+    buzzer = Buzzer(17)
+
 def connect_mqtt():
     # Global variables
     global client
@@ -46,6 +55,7 @@ def connect_meter():
     global receivedByteCount
     global jsonString
     global measurement
+    global buzzer
 
     try:
         ser = serial.Serial('/dev/ttyUSB0', 2400)
@@ -96,6 +106,8 @@ def connect_meter():
                     print(jsonString)
                     # Publish the jsonString
                     client.publish(topic, jsonString)
+                    # Blink buzzer GPIO to indicate that we have sent a measurement
+                    buzzer.beep()
                     # Reset the jsonString and measurement
                     jsonString = ""
                     measurement = {
