@@ -48,7 +48,7 @@ def connect_meter():
     global measurement
 
     try:
-        ser = serial.Serial('/dev/ttyACM0', 2400)
+        ser = serial.Serial('/dev/ttyUSB0', 2400)
         #ser = serial.Serial('COM16', 2400)
     except:
         print("Serial not available")
