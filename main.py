@@ -70,7 +70,10 @@ def connect_meter():
                     measurement["moisture"] += data.hex()[1:]
                 # Add decimal delimiter if we are at the last byte
                 if receivedByteCount == 7:
-                    measurement["moisture"] = measurement["moisture"][:2] + "." + data.hex()[1:]
+                    if data.hex()[1:] == "1":
+                        measurement["moisture"] = measurement["moisture"][:2] + "." + data.hex()[1:]
+                    else:
+                        measurement["moisture"] = measurement["moisture"][:2] + data.hex()[1:]
                 # Increment the receivedByteCount
                 receivedByteCount += 1
                 # If we have received 4 bytes, we are done
