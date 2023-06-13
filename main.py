@@ -3,6 +3,7 @@ import paho.mqtt.client as mqtt
 import json
 from datetime import datetime
 from gpiozero import Buzzer
+from gpiozero import LED
 from time import sleep
 
 # Variable to indicate that we are receiving data
@@ -23,7 +24,7 @@ measurement = {
 
 # MQTT variables
 client = None
-broker = "pirover.xyz"
+broker = "125.234.135.55"
 port = 1883
 topic = "moisture-meter-results"
 
@@ -32,8 +33,8 @@ buzzer = None
 def init_gpio():
     global buzzer
 
-    buzzer = Buzzer(17)
-
+    #buzzer = LED(17)
+    return True
 def connect_mqtt():
     # Global variables
     global client
@@ -58,8 +59,8 @@ def connect_meter():
     global buzzer
 
     try:
-        ser = serial.Serial('/dev/ttyUSB0', 2400)
-        #ser = serial.Serial('COM16', 2400)
+        #ser = serial.Serial('/dev/ttyUSB0', 2400)
+        ser = serial.Serial('COM16', 2400)
     except:
         print("Serial not available")
         return False
@@ -107,7 +108,7 @@ def connect_meter():
                     # Publish the jsonString
                     client.publish(topic, jsonString)
                     # Blink buzzer GPIO to indicate that we have sent a measurement
-                    buzzer.beep()
+                    #buzzer.beep()
                     # Reset the jsonString and measurement
                     jsonString = ""
                     measurement = {
@@ -144,6 +145,7 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
 def main():
+    init_gpio()
     connect_mqtt()
     connect_meter()
     # Wait for any key to be pressed
