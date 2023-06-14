@@ -123,8 +123,8 @@ def connect_meter():
                         "moisture": "",
                         "raw": ""
                     }
-                else:
-                    print('Not enough 10 bytes')
+                #else:
+                    #print('Not enough 10 bytes')
             else:
                 # Print what is read
                 print(data.hex())
