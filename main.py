@@ -59,8 +59,8 @@ def connect_meter():
     global buzzer
 
     try:
-        #ser = serial.Serial('/dev/ttyUSB0', 2400)
-        ser = serial.Serial('COM16', 2400)
+        ser = serial.Serial('/dev/ttyUSB0', 2400)
+        #ser = serial.Serial('COM16', 2400)
     except:
         print("Serial not available")
         return False
@@ -76,8 +76,15 @@ def connect_meter():
                 print(data.hex(), end='')
                 # Add to raw
                 measurement["raw"] += data.hex()
-                if (receivedByteCount == 5 or receivedByteCount == 6):
-                    # Remove the leading zero, 04 -> 4
+                if (receivedByteCount == 5):
+                    # Print value
+                    print(data.hex())
+                    # If the value is from A to F, skip it
+                    if data.hex()[1:] == "a" or data.hex()[1:] == "b" or data.hex()[1:] == "c" or data.hex()[1:] == "d" or data.hex()[1:] == "e" or data.hex()[1:] == "f":
+                        continue
+                    else:
+                        measurement["moisture"] += data.hex()[1:]
+                if (receivedByteCount == 6):
                     measurement["moisture"] += data.hex()[1:]
                 # Add decimal delimiter if we are at the last byte
                 if receivedByteCount == 7:
@@ -90,8 +97,8 @@ def connect_meter():
                         measurement["moisture"] = measurement["moisture"][:2] + temp
                 # Increment the receivedByteCount
                 receivedByteCount += 1
-                # If we have received 4 bytes, we are done
-                if receivedByteCount == 10:
+                # If we have received 10 bytes, we are done
+                if receivedByteCount >= 10:
                     # Reset the receivedByteCount
                     receivedByteCount = 0
                     # We are no longer receiving data
@@ -116,6 +123,8 @@ def connect_meter():
                         "moisture": "",
                         "raw": ""
                     }
+                else:
+                    print('Not enough 10 bytes')
             else:
                 # Print what is read
                 print(data.hex())
