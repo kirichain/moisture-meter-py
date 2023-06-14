@@ -57,6 +57,7 @@ def connect_meter():
     global jsonString
     global measurement
     global buzzer
+    global isMeasurementLowerThan10
 
     try:
         ser = serial.Serial('/dev/ttyUSB0', 2400)
@@ -77,10 +78,8 @@ def connect_meter():
                 # Add to raw
                 measurement["raw"] += data.hex()
                 if (receivedByteCount == 5):
-                    # Print value
-                    print(data.hex())
-                    # If the value is from A to F, skip it
-                    if data.hex()[1:] == "a" or data.hex()[1:] == "b" or data.hex()[1:] == "c" or data.hex()[1:] == "d" or data.hex()[1:] == "e" or data.hex()[1:] == "f":
+                    # If the value is 0x0a, skip it
+                    if data.hex()[1:] == "a":
                         continue
                     else:
                         measurement["moisture"] += data.hex()[1:]
@@ -98,7 +97,7 @@ def connect_meter():
                 # Increment the receivedByteCount
                 receivedByteCount += 1
                 # If we have received 10 bytes, we are done
-                if receivedByteCount >= 10:
+                if receivedByteCount == 10:
                     # Reset the receivedByteCount
                     receivedByteCount = 0
                     # We are no longer receiving data
